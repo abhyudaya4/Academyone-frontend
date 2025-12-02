@@ -1,8 +1,17 @@
-// ===== CONFIGURATION =====
-const N8N_CHAT_URL = "http://localhost:5678/webhook/a92b422b-c7af-447e-99bd-00eef6366260";
-const N8N_HISTORY_URL = "http://localhost:5678/webhook/805b513b-cbac-4e24-96e0-efdeb2717c0b";
+// ===============================
+// 🚀 CONFIGURATION (IMPORTANT)
+// ===============================
 
-// ===== DOM ELEMENTS =====
+// BACKEND ROUTE THAT PROXIES TO N8N
+// Change this before going live!
+const BACKEND_CHAT_URL = "http://localhost:5000/api/chat/chatbot";
+
+// If later you integrate history in backend, set here
+
+
+// ===============================
+// 🌐 DOM ELEMENTS
+// ===============================
 const chatContainer = document.getElementById('chat-container');
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
@@ -11,17 +20,23 @@ const historySidebar = document.getElementById('history-sidebar');
 const sidebarOverlay = document.getElementById('sidebar-overlay');
 const historyList = document.getElementById('history-list');
 
-// ===== STATE =====
+
+// ===============================
+// 🧠 SESSION STATE
+// ===============================
 let currentSessionId = generateSessionId();
 
 function generateSessionId() {
-  return 'sess_' + Math.random().toString(36).substr(2, 9);
+  return 'sess_' + Math.random().toString(36).substring(2, 10);
 }
 
-// ===== SIDEBAR FUNCTIONS =====
+
+// ===============================
+// 📚 SIDEBAR FUNCTIONS
+// ===============================
 function toggleSidebar() {
   const isClosed = !historySidebar.classList.contains('open');
-  
+
   if (isClosed) {
     historySidebar.classList.add('open');
     sidebarOverlay.classList.add('visible');
@@ -40,15 +55,17 @@ function startNewChat() {
   toggleSidebar();
 }
 
+
+// ===============================
+// 🕓 LOAD CHAT HISTORY (IF ANY)
+// ===============================
 async function loadChatHistory() {
   historyList.innerHTML = '<div class="history-loading">Fetching history...</div>';
 
   try {
     const response = await fetch(N8N_HISTORY_URL, { method: 'GET' });
 
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
     const text = await response.text();
 
@@ -59,6 +76,7 @@ async function loadChatHistory() {
 
     const sessions = JSON.parse(text);
     renderHistoryList(sessions);
+
   } catch (error) {
     console.error('History Error:', error);
     historyList.innerHTML = '<div class="history-loading">Feature coming soon</div>';
@@ -67,8 +85,8 @@ async function loadChatHistory() {
 
 function renderHistoryList(sessions) {
   historyList.innerHTML = '';
-  
-  if (sessions.length === 0) {
+
+  if (!sessions.length) {
     historyList.innerHTML = '<div class="history-loading">No history found.</div>';
     return;
   }
@@ -76,16 +94,22 @@ function renderHistoryList(sessions) {
   sessions.forEach(session => {
     const isActive = session.sessionId === currentSessionId;
     const btn = document.createElement('button');
+
     btn.className = `history-item ${isActive ? 'active' : ''}`;
     btn.innerHTML = `
       <span class="history-item-title">${session.title}</span>
       <span class="history-item-date">${session.date}</span>
     `;
+
     btn.onclick = () => loadSession(session.sessionId, session.title);
     historyList.appendChild(btn);
   });
 }
 
+
+// ===============================
+// 📥 LOAD A SAVED SESSION
+// ===============================
 async function loadSession(sessionId, title) {
   currentSessionId = sessionId;
   document.getElementById('current-session-label').innerText = title;
@@ -98,43 +122,21 @@ async function loadSession(sessionId, title) {
       </svg>
       <p style="font-size: 0.875rem; color: var(--muted-foreground);">Restoring memory...</p>
     </div>`;
-
-  try {
-    const response = await fetch(`${N8N_SESSION_URL}?sessionId=${sessionId}`, {
-      method: 'GET'
-    });
-
-    const historyArray = await response.json();
-    chatContainer.innerHTML = '';
-
-    if (!historyArray || historyArray.length === 0) {
-      chatContainer.innerHTML = '<div style="text-align: center; color: var(--muted-foreground); margin-top: 2rem;">This conversation is empty.</div>';
-      return;
-    }
-
-    historyArray.forEach(msg => {
-      const sender = msg.type === 'human' || msg.id?.includes('HumanMessage') ? 'user' : 'ai';
-      appendMessage(sender, msg.content);
-    });
-  } catch (error) {
-    console.error('Load Error:', error);
-    chatContainer.innerHTML = '<div style="text-align: center; color: var(--pink-accent); margin-top: 2rem;">Failed to load conversation.</div>';
-  }
 }
 
-// ===== CHAT FUNCTIONS =====
+
+// ===============================
+// 💬 CHAT FUNCTIONS
+// ===============================
 function scrollToBottom() {
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
 function appendMessage(sender, text) {
   const isAi = sender === 'ai';
-  const timestamp = new Date().toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  const avatarIcon = isAi 
+  const avatarIcon = isAi
     ? '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>'
     : '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>';
 
@@ -159,44 +161,56 @@ function appendMessage(sender, text) {
   scrollToBottom();
 }
 
+
+// ===============================
+// 🚀 SEND MESSAGE VIA BACKEND
+// ===============================
 async function sendMessage(text) {
   if (!text.trim()) return;
-  
+
   appendMessage('user', text);
   userInput.value = '';
   typingIndicator.classList.add('visible');
   scrollToBottom();
 
   try {
-    const response = await fetch(N8N_CHAT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch(BACKEND_CHAT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: text,
         sessionId: currentSessionId
       })
     });
-    
+
     const result = await response.json();
     typingIndicator.classList.remove('visible');
 
-    const reply = result.output || result.text || "I didn't get a response.";
+    const reply = result.reply || result.output || result.text || "I didn't get a response.";
     appendMessage('ai', reply);
-  } catch (e) {
-    console.error(e);
+
+  } catch (error) {
+    console.error("Chat Error:", error);
     typingIndicator.classList.remove('visible');
-    appendMessage('ai', 'Error connecting to AI.');
+    appendMessage('ai', "⚠ Error connecting to server.");
   }
 }
 
-// ===== AUTO-RESIZE TEXTAREA =====
-userInput.addEventListener('input', function() {
+
+// ===============================
+// 📝 AUTO-RESIZE TEXTAREA
+// ===============================
+userInput.addEventListener('input', function () {
   this.style.height = 'auto';
   this.style.height = Math.min(this.scrollHeight, 128) + 'px';
 });
 
-// ===== EVENT LISTENERS =====
+
+// ===============================
+// 🎯 EVENT LISTENERS
+// ===============================
 sendBtn.addEventListener('click', () => sendMessage(userInput.value));
+
 userInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -204,11 +218,13 @@ userInput.addEventListener('keypress', (e) => {
   }
 });
 
-// ===== INITIALIZATION =====
+
+// ===============================
+// 🟢 INIT
+// ===============================
 document.getElementById('init-timestamp').innerText = new Date().toLocaleTimeString([], {
   hour: '2-digit',
   minute: '2-digit'
 });
-
 
 loadChatHistory();
