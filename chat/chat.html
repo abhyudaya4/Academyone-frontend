@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AcademyOne - AI Learning Assistant</title>
+    <meta
+      name="description"
+      content="Chat with AcademyOne AI to learn anything instantly with personalized explanations and interactive features."
+    />
+    <link rel="stylesheet" href="chat-styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="../config.js"></script>
+  </head>
+  <body>
+    <!-- Floating Background Shapes -->
+    <div class="floating-shapes">
+      <div class="shape shape-green shape-1"></div>
+      <div class="shape shape-blue shape-2"></div>
+      <div class="shape shape-pink shape-3"></div>
+      <div class="shape shape-cyan-dot shape-4"></div>
+      <div class="shape shape-purple shape-5"></div>
+      <div class="glow glow-center"></div>
+    </div>
+
+    <!-- History Sidebar -->
+    <aside id="history-sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+          History
+        </span>
+        <button onclick="toggleSidebar()" class="sidebar-close">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div id="history-list" class="history-list">
+        <div class="history-loading">Loading history...</div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button onclick="startNewChat()" class="btn-new-chat">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 12h14" />
+            <path d="M12 5v14" />
+          </svg>
+          New Chat
+        </button>
+      </div>
+    </aside>
+
+    <!-- Sidebar Overlay -->
+    <div
+      id="sidebar-overlay"
+      onclick="toggleSidebar()"
+      class="sidebar-overlay"
+    ></div>
+
+    <!-- Main Chat Area -->
+    <div class="main-container">
+      <!-- Header -->
+      <header class="chat-header">
+        <div class="header-left">
+          <button onclick="toggleSidebar()" class="menu-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M9 3v18" />
+            </svg>
+          </button>
+
+          <div class="logo-area">
+            <div class="logo-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"
+                />
+              </svg>
+            </div>
+            <div class="logo-info">
+              <h1 class="logo-text">
+                Academy<span class="text-gradient">One</span>
+              </h1>
+              <div class="session-status">
+                <span class="status-dot"></span>
+                <span class="status-text" id="current-session-label"
+                  >New Session</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="menu-more">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="1" />
+            <circle cx="19" cy="12" r="1" />
+            <circle cx="5" cy="12" r="1" />
+          </svg>
+        </button>
+      </header>
+
+      <!-- Chat Messages -->
+      <div id="chat-container" class="chat-messages">
+        <div class="message-wrapper message-ai animate-fade-in">
+          <div class="message-content-wrapper">
+            <div class="message-avatar avatar-ai">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"
+                />
+              </svg>
+            </div>
+            <div class="message-bubble-wrapper">
+              <div class="message-bubble message-bubble-ai">
+                Hi there! I'm AcademyOne. I can help you learn anything in a
+                minute. What would you like to explore today?
+              </div>
+              <span class="message-time" id="init-timestamp"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div id="typing-indicator" class="typing-indicator">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="typing-icon"
+        >
+          <path
+            d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"
+          />
+        </svg>
+        Thinking...
+      </div>
+
+      <!-- Input Area -->
+      <div class="chat-input-area">
+        <div id="suggestions-container" class="suggestions-container"></div>
+
+        <div class="input-wrapper">
+          <button class="input-action-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"
+              />
+            </svg>
+          </button>
+          <textarea
+            id="user-input"
+            placeholder="Ask anything..."
+            rows="1"
+          ></textarea>
+          <button id="send-btn" class="send-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m22 2-7 20-4-9-9-4Z" />
+              <path d="M22 2 11 13" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workspace Panel -->
+    <div id="workspace-panel" class="workspace-panel">
+      <div id="workspace-idle" class="workspace-idle">
+        <div class="workspace-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect width="18" height="18" x="3" y="3" rx="2" />
+            <path d="M3 9h18" />
+            <path d="M9 21V9" />
+          </svg>
+        </div>
+        <h3 class="workspace-title">Dynamic Workspace</h3>
+        <p class="workspace-description">
+          Ask questions to trigger Code Editors, Interactive Diagrams, and
+          Flashcards here.
+        </p>
+        <div id="module-buttons" class="module-buttons"></div>
+      </div>
+      <div id="workspace-content" class="workspace-content">
+        <div id="workspace-header" class="workspace-header"></div>
+        <div id="workspace-body" class="workspace-body"></div>
+      </div>
+    </div>
+
+    <script src="chat-script.js"></script>
+  </body>
+</html>
