@@ -4,7 +4,7 @@
 
 // BACKEND ROUTE THAT PROXIES TO N8N
 // Change this before going live!
-const BACKEND_CHAT_URL = "http://localhost:5000/api/chat/chatbot";
+const BACKEND_CHAT_URL = "https://academyone-backend.onrender.com/api/chat/chatbot";
 
 // If later you integrate history in backend, set here
 
@@ -63,7 +63,7 @@ async function loadChatHistory() {
   historyList.innerHTML = '<div class="history-loading">Fetching history...</div>';
 
   try {
-    const response = await fetch(N8N_HISTORY_URL, { method: 'GET' });
+    const response = await fetch( { method: 'GET' });
 
     if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
