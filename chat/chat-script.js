@@ -4,7 +4,7 @@
 
 // BACKEND ROUTE THAT PROXIES TO N8N
 // Change this before going live!
-const BACKEND_CHAT_URL = "https://academyone-backend.onrender.com/api/chat/chatbot";
+const BACKEND_CHAT_URL = "https://academyone-backend.onrender.com/api/chat";
 
 // If later you integrate history in backend, set here
 
