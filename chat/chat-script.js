@@ -56,73 +56,73 @@ function startNewChat() {
 }
 
 
-// ===============================
-// 🕓 LOAD CHAT HISTORY (IF ANY)
-// ===============================
-async function loadChatHistory() {
-  historyList.innerHTML = '<div class="history-loading">Fetching history...</div>';
+// // ===============================
+// // 🕓 LOAD CHAT HISTORY (IF ANY)
+// // ===============================
+// async function loadChatHistory() {
+//   historyList.innerHTML = '<div class="history-loading">Fetching history...</div>';
 
-  try {
-    const response = await fetch( { method: 'GET' });
+//   try {
+//     const response = await fetch( { method: 'GET' });
 
-    if (!response.ok) throw new Error(`Server error: ${response.status}`);
+//     if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
-    const text = await response.text();
+//     const text = await response.text();
 
-    if (!text) {
-      historyList.innerHTML = '<div class="history-loading">Feature coming soon</div>';
-      return;
-    }
+//     if (!text) {
+//       historyList.innerHTML = '<div class="history-loading">Feature coming soon</div>';
+//       return;
+//     }
 
-    const sessions = JSON.parse(text);
-    renderHistoryList(sessions);
+//     const sessions = JSON.parse(text);
+//     renderHistoryList(sessions);
 
-  } catch (error) {
-    console.error('History Error:', error);
-    historyList.innerHTML = '<div class="history-loading">Feature coming soon</div>';
-  }
-}
+//   } catch (error) {
+//     console.error('History Error:', error);
+//     historyList.innerHTML = '<div class="history-loading">Feature coming soon</div>';
+//   }
+// }
 
-function renderHistoryList(sessions) {
-  historyList.innerHTML = '';
+// function renderHistoryList(sessions) {
+//   historyList.innerHTML = '';
 
-  if (!sessions.length) {
-    historyList.innerHTML = '<div class="history-loading">No history found.</div>';
-    return;
-  }
+//   if (!sessions.length) {
+//     historyList.innerHTML = '<div class="history-loading">No history found.</div>';
+//     return;
+//   }
 
-  sessions.forEach(session => {
-    const isActive = session.sessionId === currentSessionId;
-    const btn = document.createElement('button');
+//   sessions.forEach(session => {
+//     const isActive = session.sessionId === currentSessionId;
+//     const btn = document.createElement('button');
 
-    btn.className = `history-item ${isActive ? 'active' : ''}`;
-    btn.innerHTML = `
-      <span class="history-item-title">${session.title}</span>
-      <span class="history-item-date">${session.date}</span>
-    `;
+//     btn.className = `history-item ${isActive ? 'active' : ''}`;
+//     btn.innerHTML = `
+//       <span class="history-item-title">${session.title}</span>
+//       <span class="history-item-date">${session.date}</span>
+//     `;
 
-    btn.onclick = () => loadSession(session.sessionId, session.title);
-    historyList.appendChild(btn);
-  });
-}
+//     btn.onclick = () => loadSession(session.sessionId, session.title);
+//     historyList.appendChild(btn);
+//   });
+// }
 
 
-// ===============================
-// 📥 LOAD A SAVED SESSION
-// ===============================
-async function loadSession(sessionId, title) {
-  currentSessionId = sessionId;
-  document.getElementById('current-session-label').innerText = title;
-  toggleSidebar();
+// // ===============================
+// // 📥 LOAD A SAVED SESSION
+// // ===============================
+// async function loadSession(sessionId, title) {
+//   currentSessionId = sessionId;
+//   document.getElementById('current-session-label').innerText = title;
+//   toggleSidebar();
 
-  chatContainer.innerHTML = `
-    <div style="display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;">
-      <svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--cyan);">
-        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-      </svg>
-      <p style="font-size: 0.875rem; color: var(--muted-foreground);">Restoring memory...</p>
-    </div>`;
-}
+//   chatContainer.innerHTML = `
+//     <div style="display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;">
+//       <svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--cyan);">
+//         <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+//       </svg>
+//       <p style="font-size: 0.875rem; color: var(--muted-foreground);">Restoring memory...</p>
+//     </div>`;
+// }
 
 
 // ===============================
@@ -227,4 +227,4 @@ document.getElementById('init-timestamp').innerText = new Date().toLocaleTimeStr
   minute: '2-digit'
 });
 
-loadChatHistory();
+// loadChatHistory();
