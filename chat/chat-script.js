@@ -186,7 +186,7 @@ async function sendMessage(text) {
     const result = await response.json();
     typingIndicator.classList.remove('visible');
 
-    const reply = result.reply || result.output || result.text || "I didn't get a response.";
+    const reply = result.reply || result.output || result.text ;
     appendMessage('ai', reply);
 
   } catch (error) {
