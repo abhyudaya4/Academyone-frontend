@@ -140,25 +140,33 @@ function appendMessage(sender, text) {
     ? '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>'
     : '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>';
 
-  const msgHTML = `
-    <div class="message-wrapper message-${isAi ? 'ai' : 'user'} animate-fade-in">
-      <div class="message-content-wrapper">
-        <div class="message-avatar avatar-${isAi ? 'ai' : 'user'}">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            ${avatarIcon}
-          </svg>
-        </div>
-        <div class="message-bubble-wrapper">
-          <div class="message-bubble message-bubble-${isAi ? 'ai' : 'user'}">
-            ${text}
-          </div>
-          <span class="message-time">${timestamp}</span>
-        </div>
+const msgHTML = `
+  <div class="message-wrapper message-${isAi ? 'ai' : 'user'} animate-fade-in">
+    <div class="message-content-wrapper">
+      <div class="message-avatar avatar-${isAi ? 'ai' : 'user'}">
+        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          ${avatarIcon}
+        </svg>
       </div>
-    </div>`;
+      <div class="message-bubble-wrapper">
+        <div class="message-bubble message-bubble-${isAi ? 'ai' : 'user'} ${isAi ? 'markdown-content' : ''}">
+          ${rawHtml}
+        </div>
+        <span class="message-time">${timestamp}</span>
+      </div>
+    </div>
+  </div>`;
 
-  chatContainer.insertAdjacentHTML('beforeend', msgHTML);
-  scrollToBottom();
+chatContainer.insertAdjacentHTML('beforeend', msgHTML);
+
+// 4. Trigger Syntax Highlighting for code blocks
+if (isAi) {
+  document.querySelectorAll('pre code').forEach((block) => {
+    hljs.highlightElement(block);
+  });
+}
+
+scrollToBottom();
 }
 
 
